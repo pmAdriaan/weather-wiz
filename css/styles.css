@@ -1,0 +1,33 @@
+.separator {
+    height: 1px;
+    width: 100%;
+    margin: 25px 0;
+    background: #BBBBBB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .separator::before{
+    content: "or";
+    color: #6C757D;
+    font-size: 1.18rem;
+    padding: 0 15px;
+    margin-top: -4px;
+    background: #E3F2FD;
+  }
+
+  .btn-primary {
+    width: 100%;
+  }
+
+  .btn-secondary {
+    width: 100%;
+  }
+
+  .card-color-bg {
+    background-color: #7d7d7d;
+  }
+
+  .card-text-color {
+    color: #ffffff!important;
+  }
