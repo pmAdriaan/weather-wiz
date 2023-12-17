@@ -152,7 +152,7 @@ function displayWeather(data) {
         const isMidDay = dayjs(item.dt_txt).hour() === 12;
 
         if (isCurrentWeather) {
-            const date = dayjs().format("MMMM D, YYYY");
+            const date = dayjs().format("dddd: D MMMM YYYY");
             const icon = createWeatherIcon(item.weather[0].icon);
             const temperature = item.main.temp;
             const windSpeed = item.wind.speed;
@@ -169,7 +169,7 @@ function displayWeather(data) {
 
             todayForecastContainer.append(weatherCard);
         } else if (isMidDay) {
-            const date = dayjs(item.dt_txt).format("DD/MM/YYYY");
+            const date = dayjs(item.dt_txt).format("dddd, DD MMM");
             const icon = createWeatherIcon(item.weather[0].icon);
             const temperature = item.main.temp;
             const windSpeed = item.wind.speed;
