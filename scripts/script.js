@@ -34,6 +34,12 @@ function init() {
 function handleSearchFormSubmit(event) {
     event.preventDefault();
     const searchTerm = searchInput.val();
+
+    if (!searchTerm) {
+        displayErrorToUser("Please enter a city name.");
+        return;
+    }
+
     const queryURL = buildWeatherQueryURL(searchTerm);
     fetchWeatherData(queryURL);
 }
@@ -46,12 +52,25 @@ function buildWeatherQueryURL(city) {
 // Fetches weather data from the API
 function fetchWeatherData(url) {
     fetch(url)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             displayWeather(data);
             addToHistory(data.city.name);
         })
-        .catch(handleError);
+        .catch(error => {
+            if (error.message.includes('Status: 404')) {
+                displayErrorToUser("Invalid city. Please enter a valid city name.");
+            } else if (error.message.includes('Status: 401')) {
+                displayErrorToUser("Unauthorized request. Please check your API key.");
+            } else {
+                handleError(error);
+            }
+        });
 }
 
 // Displays weather information on the UI
