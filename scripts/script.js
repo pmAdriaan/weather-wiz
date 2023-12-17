@@ -21,6 +21,11 @@ const CARD_HEADER = "card-header text-left fw-bold bg-info";
 const CARD_BODY = "card-body";
 const CARD_TEXT = "card-text";
 
+// FontAwesome weather icons
+const TEMPERATURE_ICON = "<i class='fa-sharp fa-solid fa-temperature-three-quarters'></i>";
+const WIND_SPEED_ICON = "<i class='fa-sharp fa-solid fa-wind'></i>";
+const HUMIDITY_UNIT_ICON = "<i class='fa-sharp fa-solid fa-droplet'></i>";
+
 $(document).ready(init);
 
 // Initialization function
@@ -57,7 +62,7 @@ function handleSearchFormSubmit(event) {
     // Build the weather query URL
     const queryURL = buildWeatherQueryURL(city, stateCode, countryCode);
 
-     // Fetch weather data
+    // Fetch weather data
     fetchWeatherData(queryURL);
 
     // Clear the search input
@@ -153,7 +158,7 @@ function displayWeather(data) {
 
         if (isCurrentWeather) {
             const date = dayjs().format("dddd: D MMMM YYYY");
-            const icon = createWeatherIcon(item.weather[0].icon);
+            const icon = createWeatherIcon(item.weather[0].id, isMidDay);
             const temperature = item.main.temp;
             const windSpeed = item.wind.speed;
             const humidity = item.main.humidity;
@@ -170,7 +175,7 @@ function displayWeather(data) {
             todayForecastContainer.append(weatherCard);
         } else if (isMidDay) {
             const date = dayjs(item.dt_txt).format("dddd, DD MMM");
-            const icon = createWeatherIcon(item.weather[0].icon);
+            const icon = createWeatherIcon(item.weather[0].id, isMidDay);
             const temperature = item.main.temp;
             const windSpeed = item.wind.speed;
             const humidity = item.main.humidity;
@@ -187,11 +192,6 @@ function displayWeather(data) {
             fiveDayForecastContainer.append(weatherCard);
         }
     });
-}
-
-// Creates a weather icon element
-function createWeatherIcon(iconCode) {
-    return $(`<img src="https://openweathermap.org/img/w/${iconCode}.png">`);
 }
 
 // Creates a weather card element
@@ -218,9 +218,25 @@ function createWeatherCard(city, date, icon, temperature, windSpeed, humidity) {
 
 // Creates weather information elements
 function createWeatherInfo(...infoItems) {
-    return infoItems.map(([label, value, unit]) =>
-        $(`<p class="${CARD_TEXT}">${label}: ${value} ${unit}</p>`)
-    );
+    return infoItems.map(([label, value, unit]) => {
+        let icon = "";
+        switch (unit) {
+            case TEMPERATURE_UNIT:
+                icon = TEMPERATURE_ICON;
+                break;
+            case WIND_SPEED_UNIT:
+                icon = WIND_SPEED_ICON;
+                break;
+            case HUMIDITY_UNIT:
+                icon = HUMIDITY_UNIT_ICON;
+                break;
+            default:
+                icon = "";
+        }
+        return $(`<p class="${CARD_TEXT}">
+        ${icon} ${label}: ${value} ${unit}
+        </p>`);
+    });
 }
 
 // Gets the user's current location and fetches weather data
