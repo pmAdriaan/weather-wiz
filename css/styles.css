@@ -24,6 +24,10 @@
     width: 100%;
   }
 
+  .btn-danger {
+    width: 100%;
+  }
+  
   .card-color-bg {
     background-color: #7d7d7d;
   }

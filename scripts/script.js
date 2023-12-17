@@ -13,6 +13,7 @@ const todayForecastContainer = $("#today");
 const fiveDayForecastContainer = $("#displayForecast");
 const historyContainer = $("#history");
 const currentLocationButton = $("#use-current-location");
+const clearHistoryButton = $("#clear-history-button");
 
 // Bootstrap
 const CARD = "card border-2 card-color-bg btn-shadow card-text-color";
@@ -28,6 +29,16 @@ function init() {
     searchForm.on("submit", handleSearchFormSubmit);
     currentLocationButton.on("click", getCurrentLocationWeather);
     historyContainer.on("click", "button.btn-outline-primary", handleHistoryButton);
+    clearHistoryButton.on("click", clearHistory);
+
+    // Load history from local storage
+    loadHistory();
+
+    // Display "Clear History" button if there's at least 1 city in the history
+    toggleClearHistoryButton();
+
+    // Clear the search input on page load
+    searchInput.val('');
 }
 
 // Handles search form submission
@@ -40,13 +51,69 @@ function handleSearchFormSubmit(event) {
         return;
     }
 
-    const queryURL = buildWeatherQueryURL(searchTerm);
+    // Extract city, state code, and country code from the input
+    const { city, stateCode, countryCode } = parseSearchTerm(searchTerm);
+
+    // Build the weather query URL
+    const queryURL = buildWeatherQueryURL(city, stateCode, countryCode);
+
+     // Fetch weather data
     fetchWeatherData(queryURL);
+
+    // Clear the search input
+    searchInput.val('');
+}
+
+// Parses the search term to extract city, state code, and country code
+function parseSearchTerm(searchTerm) {
+    // Split the input into words
+    const words = searchTerm.split(/\s+/);
+
+    // Extract city, state code, and country code
+    let city = '';
+    let stateCode = '';
+    let countryCode = '';
+
+    // Check if state code and country code are provided
+    if (words.length > 1) {
+        const lastWord = words[words.length - 1];
+        if (lastWord.length === 2) {
+            // Assume it's a country code
+            countryCode = lastWord.toUpperCase();
+            city = words.slice(0, -1).join(' ');
+        } else if (lastWord.length === 5) {
+            // Assume it's a state code
+            stateCode = lastWord.toUpperCase();
+            city = words.slice(0, -1).join(' ');
+        } else {
+            // If the last word is not a state code or country code, assume it's part of the city name
+            city = words.join(' ');
+        }
+    } else {
+        // If there's only one word, consider it as the city name
+        city = words[0];
+    }
+
+    return { city, stateCode, countryCode };
 }
 
 // Builds weather query URL
-function buildWeatherQueryURL(city) {
-    return `${API_BASE_URL}?q=${city}&appid=${API_KEY}&units=${UNITS}`;
+function buildWeatherQueryURL(city, stateCode, countryCode) {
+    let query = `${API_BASE_URL}?q=${city}`;
+
+    // Include state code if provided
+    if (stateCode) {
+        query += `,${stateCode}`;
+    }
+
+    // Include country code if provided
+    if (countryCode) {
+        query += `,${countryCode}`;
+    }
+
+    query += `&appid=${API_KEY}&units=${UNITS}`;
+
+    return query;
 }
 
 // Fetches weather data from the API
@@ -60,7 +127,7 @@ function fetchWeatherData(url) {
         })
         .then(data => {
             displayWeather(data);
-            addToHistory(data.city.name);
+            addToHistory(data.city.name, data.city.country);
         })
         .catch(error => {
             if (error.message.includes('Status: 404')) {
@@ -78,6 +145,7 @@ function displayWeather(data) {
     clearContainers();
 
     const currentCity = data.city.name;
+    const currentCountry = data.city.country;
 
     data.list.forEach((item, index) => {
         const isCurrentWeather = index === 0;
@@ -92,7 +160,7 @@ function displayWeather(data) {
 
             const weatherCard = createWeatherCard(
                 currentCity,
-                `The weather in ${currentCity} right now - (${date})`,
+                `The weather in ${currentCity} (${currentCountry}) right now is ${temperature} ${TEMPERATURE_UNIT} - (${date})`,
                 icon,
                 temperature,
                 windSpeed,
@@ -200,21 +268,71 @@ function displayErrorToUser(message) {
 }
 
 // Adds a city to the search history
-function addToHistory(city) {
-    const existingButton = historyContainer.find(`button:contains('${city}')`);
+function addToHistory(city, country) {
+    const existingButton = historyContainer.find(`button:contains('${city}, ${country}')`);
 
     if (existingButton.length) {
         existingButton.detach().prependTo(historyContainer);
     } else {
-        const historyButton = $(`<button class='btn btn-outline-primary mb-2'>${city}</button>`);
+        const historyButton = $(`<button class='btn btn-outline-primary mb-2'>${city}, ${country}</button>`);
         historyContainer.prepend(historyButton);
+
+        // Save history to local storage
+        saveHistory()
     }
+
+    // Display "Clear History" button
+    toggleClearHistoryButton();
 }
 
 // Handles click on a history button
 function handleHistoryButton() {
     searchInput.val($(this).text());
     searchForm.submit();
+}
+
+// Saves history to local storage
+function saveHistory() {
+    const historyArray = [];
+    historyContainer.find('button').each(function () {
+        historyArray.push($(this).text());
+    });
+
+    localStorage.setItem('weatherHistory', JSON.stringify(historyArray));
+}
+
+// Loads history from local storage
+function loadHistory() {
+    const historyString = localStorage.getItem('weatherHistory');
+    if (historyString) {
+        const historyArray = JSON.parse(historyString);
+
+        historyArray.forEach(city => {
+            const historyButton = $(`<button class='btn btn-outline-primary mb-2'>${city}</button>`);
+            historyContainer.append(historyButton);
+        });
+    }
+}
+
+// Clears history from local storage and UI
+function clearHistory() {
+    historyContainer.empty();
+    localStorage.removeItem('weatherHistory');
+
+    // Hide "Clear History" button
+    toggleClearHistoryButton();
+
+    // Confirm
+    displayErrorToUser("The history has been cleared!");
+}
+
+// Toggles the visibility of the "Clear History" button
+function toggleClearHistoryButton() {
+    if (historyContainer.find('button').length > 0) {
+        clearHistoryButton.show();
+    } else {
+        clearHistoryButton.hide();
+    }
 }
 
 // Clears forecast containers
