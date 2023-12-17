@@ -62,21 +62,41 @@ function displayWeather(data) {
 
     data.list.forEach((item, index) => {
         const isCurrentWeather = index === 0;
-
-        const date = isCurrentWeather ?
-            dayjs().format("MMMM D, YYYY") :
-            dayjs(item.dt_txt).format("DD/MM/YYYY");
-
-        const icon = createWeatherIcon(item.weather[0].icon);
-        const temperature = item.main.temp;
-        const windSpeed = item.wind.speed;
-        const humidity = item.main.humidity;
-
-        const weatherCard = createWeatherCard(currentCity, isCurrentWeather ? `${currentCity}, Today: ${date}` : date, icon, temperature, windSpeed, humidity);
+        const isMidDay = dayjs(item.dt_txt).hour() === 12;
 
         if (isCurrentWeather) {
+            const date = dayjs().format("MMMM D, YYYY");
+            const icon = createWeatherIcon(item.weather[0].icon);
+            const temperature = item.main.temp;
+            const windSpeed = item.wind.speed;
+            const humidity = item.main.humidity;
+
+            const weatherCard = createWeatherCard(
+                currentCity,
+                `The weather in ${currentCity} right now - (${date})`,
+                icon,
+                temperature,
+                windSpeed,
+                humidity
+            );
+
             todayForecastContainer.append(weatherCard);
-        } else if (index % 8 === 1) {
+        } else if (isMidDay) {
+            const date = dayjs(item.dt_txt).format("DD/MM/YYYY");
+            const icon = createWeatherIcon(item.weather[0].icon);
+            const temperature = item.main.temp;
+            const windSpeed = item.wind.speed;
+            const humidity = item.main.humidity;
+
+            const weatherCard = createWeatherCard(
+                currentCity,
+                date,
+                icon,
+                temperature,
+                windSpeed,
+                humidity
+            );
+
             fiveDayForecastContainer.append(weatherCard);
         }
     });
