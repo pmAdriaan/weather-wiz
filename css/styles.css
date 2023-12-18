@@ -175,10 +175,12 @@ body {
 }
 
 .weather-data #weather-icon-unit {
+  width: 20px;
   color: rgb(0, 81, 128);
 }
 
 #today #weather-icon-unit {
+  width: 30px;
   color: rgb(0, 81, 128);
 }
 
@@ -261,7 +263,6 @@ footer {
 
   #today .card-body {
     flex-direction: column;
-    text-align: center;
   }
 
   #forecast .card {
@@ -272,5 +273,10 @@ footer {
     display: flex;
     align-items: center;
     justify-content: space-around;
+  }
+
+  #today #weather-icon {
+    width: 100px;
+    height: 100px;
   }
 }
