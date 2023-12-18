@@ -54,6 +54,11 @@ body {
   margin: 0;
 }
 
+#logo {
+  margin-left:5px;
+  width: 40px;
+}
+
 /* Main view */
 .container-main {
   min-height: 91vh;
