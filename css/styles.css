@@ -203,7 +203,7 @@ body {
 }
 
 .card-body {
-  padding: 20px;
+  padding: 10px;
 }
 
 .card-text-color {
@@ -222,6 +222,12 @@ body {
     brightness(90%) contrast(90%);
   -webkit-filter: invert(65%) sepia(20%) saturate(400%) hue-rotate(180deg)
     brightness(90%) contrast(90%);
+}
+
+.weather-description {
+  margin: 0;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.7)
 }
 
 /* Footer */

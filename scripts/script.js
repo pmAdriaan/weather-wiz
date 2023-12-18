@@ -199,6 +199,7 @@ function displayWeather(data) {
         if (isCurrentWeather) {
             const date = dayjs().format("dddd: D MMM YYYY");
             const icon = createWeatherIcon(item.weather[0].id, isDayOrNight);
+            const description = item.weather[0].description;
             const temperature = item.main.temp;
             const windSpeed = item.wind.speed;
             const humidity = item.main.humidity;
@@ -207,6 +208,7 @@ function displayWeather(data) {
                 currentCity,
                 `The weather in ${currentCity} (${currentCountry}) right now is ${temperature} ${TEMPERATURE_UNIT} - ${date}`,
                 icon,
+                description,
                 temperature,
                 windSpeed,
                 humidity
@@ -217,6 +219,7 @@ function displayWeather(data) {
         } else if (isMidDay) {
             const date = dayjs(item.dt_txt).format("dd, DD MMM");
             const icon = createWeatherIcon(item.weather[0].id, isMidDay);
+            const description = item.weather[0].description;
             const temperature = item.main.temp;
             const windSpeed = item.wind.speed;
             const humidity = item.main.humidity;
@@ -225,6 +228,7 @@ function displayWeather(data) {
                 currentCity,
                 date,
                 icon,
+                description,
                 temperature,
                 windSpeed,
                 humidity
@@ -236,7 +240,7 @@ function displayWeather(data) {
 }
 
 // Creates a weather card element
-function createWeatherCard(city, date, icon, temperature, windSpeed, humidity) {
+function createWeatherCard(city, date, icon, description, temperature, windSpeed, humidity) {
     // Create elements for the card
     const column = $("<div>").addClass("col");
     const card = $("<div>").addClass(CARD);
@@ -244,7 +248,9 @@ function createWeatherCard(city, date, icon, temperature, windSpeed, humidity) {
     cardHeader.append(`<h5>${date}</h5>`);
     const cardBody = $("<div>").addClass(CARD_BODY);
     const weatherDataContainer = $("<div>").addClass("weather-data");
-    const iconContainer = $("<div>").addClass("weather-icon-container").append(icon);
+    const iconContainer = $("<div>").addClass("weather-icon-container text-center").append(icon);
+    const weatherDescription = $("<p>").addClass("text-center weather-description").text(`${description}`)
+    iconContainer.append(weatherDescription);
 
     const weatherInfo = createWeatherInfo(
         ["Temp", temperature, TEMPERATURE_UNIT],
