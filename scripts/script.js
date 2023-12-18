@@ -1,4 +1,12 @@
-// Constants
+// GIFPHY API
+const GIPHY_API_KEY = "";
+const GIPHY_API_BASE_URL = "https://api.giphy.com/v1/gifs/random";
+const GIPHY_RATING = "g";
+const GIPHY_TAGS = ["sun", "rain", "clouds", "storm", "snow", "windy", "sunny", "thunderstorm", "clear sky", "weather, cold, warm, lighting", "nature"];
+const randomTag = GIPHY_TAGS[Math.floor(Math.random() * GIPHY_TAGS.length)];
+const GIPHY_API_URL = `${GIPHY_API_BASE_URL}?api_key=${GIPHY_API_KEY}&tag=${randomTag}&rating=${GIPHY_RATING}`;
+
+// Weather API
 const API_KEY = "";
 const API_BASE_URL = "https://api.openweathermap.org/data/2.5/forecast";
 const UNITS = "metric";
@@ -10,30 +18,51 @@ const HUMIDITY_UNIT = "%";
 const searchForm = $("#search-form");
 const searchInput = $("#search-input");
 const todayForecastContainer = $("#today");
-const fiveDayForecastContainer = $("#displayForecast");
+const fiveDayForecastContainer = $("#display-forecast");
 const historyContainer = $("#history");
 const currentLocationButton = $("#use-current-location");
 const clearHistoryButton = $("#clear-history-button");
 
 // Bootstrap
 const CARD = "card border-2 card-color-bg btn-shadow card-text-color";
-const CARD_HEADER = "card-header text-left fw-bold bg-info";
-const CARD_BODY = "card-body";
-const CARD_TEXT = "card-text";
+const CARD_HEADER = "card-header text-center fw-bold";
+const CARD_BODY = "card-body m-0";
+const CARD_TEXT = "card-text m-1";
 
 // FontAwesome weather icons
-const TEMPERATURE_ICON = "<i class='fa-sharp fa-solid fa-temperature-three-quarters'></i>";
-const WIND_SPEED_ICON = "<i class='fa-sharp fa-solid fa-wind'></i>";
-const HUMIDITY_UNIT_ICON = "<i class='fa-sharp fa-solid fa-droplet'></i>";
+const TEMPERATURE_ICON = "<i id='weather-icon-unit' class='fa-sharp fa-solid fa-temperature-three-quarters'></i>";
+const WIND_SPEED_ICON = "<i id='weather-icon-unit' class='fa-sharp fa-solid fa-wind'></i>";
+const HUMIDITY_UNIT_ICON = "<i id='weather-icon-unit' class='fa-sharp fa-solid fa-droplet'></i>";
 
 $(document).ready(init);
+
+// Fetches a random gif from Giphy API
+function fetchGiphy() {
+    fetch(GIPHY_API_URL)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            results = data.data;
+            const gifUrl = results.images.fixed_height.url;
+
+            // Display the GIF in the welcome-message div
+            $("#welcome-message").append(`<img src="${gifUrl}" alt="Welcome GIF">`);
+        })
+        .catch(error => {
+            handleGiphyError(error);
+        });
+}
 
 // Initialization function
 function init() {
     // Event listeners
     searchForm.on("submit", handleSearchFormSubmit);
     currentLocationButton.on("click", getCurrentLocationWeather);
-    historyContainer.on("click", "button.btn-outline-primary", handleHistoryButton);
+    historyContainer.on("click", "button.history-city-button", handleHistoryButton);
     clearHistoryButton.on("click", clearHistory);
 
     // Load history from local storage
@@ -44,6 +73,9 @@ function init() {
 
     // Clear the search input on page load
     searchInput.val('');
+
+    // Display a random gif
+    fetchGiphy();
 }
 
 // Handles search form submission
@@ -55,6 +87,8 @@ function handleSearchFormSubmit(event) {
         displayErrorToUser("Please enter a city name.");
         return;
     }
+
+    $("#welcome-message").hide();
 
     // Extract city, state code, and country code from the input
     const { city, stateCode, countryCode } = parseSearchTerm(searchTerm);
@@ -140,7 +174,7 @@ function fetchWeatherData(url) {
             } else if (error.message.includes('Status: 401')) {
                 displayErrorToUser("Unauthorized request. Please check your API key.");
             } else {
-                handleError(error);
+                handleWeatherDataError(error);
             }
         });
 }
@@ -151,21 +185,27 @@ function displayWeather(data) {
 
     const currentCity = data.city.name;
     const currentCountry = data.city.country;
+    const header = $("<div>").addClass("text-center");
+    header.append($("<h3>").addClass("py-2 fw-bold pt-1").text("5-Day Forecast - MidDay Weather"));
+
+    fiveDayForecastContainer.append(header);
 
     data.list.forEach((item, index) => {
         const isCurrentWeather = index === 0;
         const isMidDay = dayjs(item.dt_txt).hour() === 12;
+        const isDayOrNight = item.sys.pod === "d";
+        console.log(item);
 
         if (isCurrentWeather) {
-            const date = dayjs().format("dddd: D MMMM YYYY");
-            const icon = createWeatherIcon(item.weather[0].id, isMidDay);
+            const date = dayjs().format("dddd: D MMM YYYY");
+            const icon = createWeatherIcon(item.weather[0].id, isDayOrNight);
             const temperature = item.main.temp;
             const windSpeed = item.wind.speed;
             const humidity = item.main.humidity;
 
             const weatherCard = createWeatherCard(
                 currentCity,
-                `The weather in ${currentCity} (${currentCountry}) right now is ${temperature} ${TEMPERATURE_UNIT} - (${date})`,
+                `The weather in ${currentCity} (${currentCountry}) right now is ${temperature} ${TEMPERATURE_UNIT} - ${date}`,
                 icon,
                 temperature,
                 windSpeed,
@@ -173,8 +213,9 @@ function displayWeather(data) {
             );
 
             todayForecastContainer.append(weatherCard);
+
         } else if (isMidDay) {
-            const date = dayjs(item.dt_txt).format("dddd, DD MMM");
+            const date = dayjs(item.dt_txt).format("dd, DD MMM");
             const icon = createWeatherIcon(item.weather[0].id, isMidDay);
             const temperature = item.main.temp;
             const windSpeed = item.wind.speed;
@@ -196,19 +237,22 @@ function displayWeather(data) {
 
 // Creates a weather card element
 function createWeatherCard(city, date, icon, temperature, windSpeed, humidity) {
+    // Create elements for the card
     const column = $("<div>").addClass("col");
     const card = $("<div>").addClass(CARD);
-    const cardHeader = $("<div>").addClass(CARD_HEADER).text(`${date}`);
-
+    const cardHeader = $("<div>").addClass(CARD_HEADER);
+    cardHeader.append(`<h5>${date}</h5>`);
     const cardBody = $("<div>").addClass(CARD_BODY);
-    const iconContainer = $("<div>").append(icon);
+    const weatherDataContainer = $("<div>").addClass("weather-data");
+    const iconContainer = $("<div>").addClass("weather-icon-container").append(icon);
 
     const weatherInfo = createWeatherInfo(
         ["Temp", temperature, TEMPERATURE_UNIT],
         ["Wind", windSpeed, WIND_SPEED_UNIT],
         ["Humidity", humidity, HUMIDITY_UNIT]);
 
-    cardBody.append(iconContainer, ...weatherInfo);
+    weatherDataContainer.append(...weatherInfo);
+    cardBody.append(iconContainer, weatherDataContainer);
 
     card.append(cardHeader, cardBody);
     column.append(card);
@@ -290,7 +334,7 @@ function addToHistory(city, country) {
     if (existingButton.length) {
         existingButton.detach().prependTo(historyContainer);
     } else {
-        const historyButton = $(`<button class='btn btn-outline-primary mb-2'>${city}, ${country}</button>`);
+        const historyButton = $("<button>").addClass("btn history-city-button mb-2").text(`${city}, ${country}`);
         historyContainer.prepend(historyButton);
 
         // Save history to local storage
@@ -324,7 +368,7 @@ function loadHistory() {
         const historyArray = JSON.parse(historyString);
 
         historyArray.forEach(city => {
-            const historyButton = $(`<button class='btn btn-outline-primary mb-2'>${city}</button>`);
+            const historyButton = $(`<button class='btn history-city-button mb-2'>${city}</button>`);
             historyContainer.append(historyButton);
         });
     }
@@ -357,7 +401,12 @@ function clearContainers() {
     fiveDayForecastContainer.empty();
 }
 
+// Handles errors in fetching gif data
+function handleGiphyError(error) {
+    console.error("Error fetching Giphy data:", error);
+}
+
 // Handles errors in fetching weather data
-function handleError(error) {
+function handleWeatherDataError(error) {
     console.error("Error fetching weather data:", error);
 }

@@ -2,6 +2,9 @@
 // #
 // #  URL: https://github.com/noahblon/animated-climacons
 // #
+// # Icons mapping inspired by this post:
+// #  URL: https://community.openhab.org/t/animated-weather-condition-icons-for-openweathermap/61410
+// #
 // #################################################################
 
 

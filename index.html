@@ -1,35 +1,61 @@
 <!DOCTYPE html>
 <html lang="en-gb">
   <head>
+    <!-- Meta tags -->
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous" />
+
+    <!-- Custom CSS files -->
     <link rel="stylesheet" href="./css/reset.css" />
     <link rel="stylesheet" href="./css/styles.css" />
+
+    <!-- Google Fonts -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" />
+
     <title>Weather Dashboard</title>
   </head>
 
   <body>
+    <!-- Header Section -->
     <header
       class="container-fluid text-center text-white bg-dark p-2 weather-header">
       <h1>Weather Dashboard</h1>
     </header>
 
-    <!-- max-width for ultra wide resolutions -->
+    <!-- Main Content Section -->
     <div class="container-fluid" style="max-width: 1400px">
-      <div class="row g-4">
+      <div class="row g-4 container-main">
+        <!-- Sidebar Section -->
         <aside class="col-lg-3 pb-3">
-          <h2 id="form-heading" class="mt-1 h4 form-label">
+          <!-- Example Search Info Text -->
+          <p class="text-muted text-center search-info-text p-0 m-1 mt-2 h6">
+            Use country codes for accurate results.
+          </p>
+          <p class="text-muted p-0 mt-1 search-info-text mb-3 h6 text-center">
+            Example: London UK, Belgium BE etc.
+          </p>
+
+          <!-- Search Form Heading -->
+          <h2 id="form-heading" class="mt-1 h5 form-label">
             Search for a City or a Country:
           </h2>
-          <p class="text-center text-muted text-bg-light p-0 m-1 h6"><i class="fa-solid fa-circle-info"></i> Use country codes for accurate results. <i class="fa-solid fa-circle-info"></i></p>
-            <p class="text-muted text-bg-light p-0 mt-1 mb-3 h6 text-center">Example: London UK, Belgium BE etc. </p>
 
+          <!-- Search Form -->
           <form id="search-form" class="form mb-2">
             <div class="form-inline form-group">
               <div class="input-group">
@@ -45,13 +71,15 @@
             <div class="input-group-append">
               <button
                 type="submit"
-                class="btn btn btn-primary mt-3"
+                class="btn btn-primary mt-3"
                 id="search-button"
                 aria-label="submit search">
                 Search
               </button>
             </div>
           </form>
+
+          <!-- Other Sidebar Elements -->
           <div class="separator"></div>
           <button
             class="btn btn-secondary justify-content-center mb-4"
@@ -68,28 +96,32 @@
           </button>
         </aside>
 
-        <div class="col-lg-9 pb-3">
-          <section
-            id="today"
-            class="mt-3"
-            role="region"
-            aria-live="polite"></section>
+        <!-- Main Content Section -->
+        <div class="col-lg-9 pb-1">
+          <!-- Today's Weather Section -->
+          <section id="today" class="mt-3" role="region" aria-live="polite">
+            <div id="welcome-message" class="text-center mt-4">
+              <h2>Welcome to Weather Dashboard!</h2>
+              <p>
+                Enter a city name to get the current weather and the upcoming
+                5-day forecast.
+              </p>
+            </div>
+          </section>
 
+          <!-- 5-Day Forecast Section -->
           <section
             id="forecast"
             class="row mt-3"
             role="region"
             aria-live="polite">
+            <!-- Weather Forecast Container -->
             <div class="container-lg">
-              <div class="text-left">
-                <h3 class="py-2 fw-bold pt-1">5-Day Forecast - MidDay Weather</h3>
-              </div>
-
-              <!--weather row-->
+              <!-- Weather Row -->
               <div
                 class="row g-1 align-items-center justify-content-center py-lg-2"
-                id="displayForecast">
-                <!-- day forecast-->
+                id="display-forecast">
+                <!-- Day forecast items will be dynamically added here -->
               </div>
             </div>
           </section>
@@ -97,23 +129,29 @@
       </div>
     </div>
 
-    <!-- jQuery -->
+    <!-- Footer Section -->
+    <footer class="text-center mt-0">
+      <div class="footer-container">
+        <div class="col-md-12">
+          &copy; 2023 Weather Wiz. All rights reserved. Crafted by
+          <a href="https://mihaipirvu.dev" target="_blank">Mihai Pirvu</a>,
+          inspired by nature's whimsy 🌦️.
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-    <!-- Day.js -->
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
-
-    <!-- FontAwesome -->
     <script
       src="https://kit.fontawesome.com/16f53945bb.js"
       crossorigin="anonymous"></script>
-
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
       crossorigin="anonymous"></script>
 
-    <!-- script -->
+    <!-- Scripts -->
     <script src="./scripts/icons.js"></script>
     <script src="./scripts/script.js"></script>
   </body>
