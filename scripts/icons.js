@@ -1,12 +1,12 @@
-// # Credit for the SVG ICONS from /assets/icons/ goes to @noahblon
-// #
-// #  URL: https://github.com/noahblon/animated-climacons
-// #
-// # Icons mapping inspired by this post:
-// #  URL: https://community.openhab.org/t/animated-weather-condition-icons-for-openweathermap/61410
-// #
-// #################################################################
-
+// ================================
+// icons.js
+//
+// This file contains functions for creating weather icons based on OpenWeatherMap icon codes and day/night conditions.
+//
+// Credit for the SVG icons goes to @noahblon and can be found at https://github.com/noahblon/animated-climacons.
+//
+// Icon mapping inspired by this post: https://community.openhab.org/t/animated-weather-condition-icons-for-openweathermap/61410
+// ================================
 
 // Creates a weather icon element
 function createWeatherIcon(iconCode, isMidDay) {
