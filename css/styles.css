@@ -13,7 +13,7 @@
   --danger-button-hover-color: #c0392b;
   --history-text-color: #3498db;
   --history-bg-color: #3498db;
-  --history-hover-color: #ffffff;
+  --history-hover-color: #2980b9;
   --search-bg-color: #34495e;
   --search-text-color: #ecf0f1;
   --search-border-color: #3498db;
@@ -147,7 +147,7 @@ body {
 
 .history-city-button:hover {
   background-color: var(--history-hover-color);
-  color: var(--background-color-body);
+  color: var(--text-color-body);
 }
 
 /* Weather today card style */
