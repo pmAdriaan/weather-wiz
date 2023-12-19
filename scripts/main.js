@@ -79,7 +79,7 @@ function displayWeather(data) {
 
             const weatherCard = createWeatherCard(
                 currentCity,
-                `The weather in ${currentCity} (${currentCountry}) right now is ${temperature} ${TEMPERATURE_UNIT} - ${date}`,
+                `The weather in <span id="city-name">${currentCity}</span> (${currentCountry}) is ${temperature} ${TEMPERATURE_UNIT} - ${date}`,
                 icon,
                 description,
                 temperature,

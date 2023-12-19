@@ -155,6 +155,11 @@ body {
   font-size: 1.4em;
 }
 
+#today #city-name {
+  font-weight: 900;
+  color: #53e622;
+}
+
 #today .card-body {
   display: flex;
   align-items: center;
