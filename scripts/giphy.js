@@ -8,7 +8,7 @@
 // Giphy API
 const GIPHY_API_BASE_URL = "https://api.giphy.com/v1/gifs/random";
 const GIPHY_RATING = "g";
-const GIPHY_TAGS = ["sun", "rain", "clouds", "storm", "snow", "windy", "sunny", "thunderstorm", "clear sky", "weather, cold, warm, lighting", "nature"];
+const GIPHY_TAGS = ["sun", "rain", "clouds", "storm", "snow", "windy", "sunny", "thunderstorm", "clear sky", "weather", "cold", "warm", "lighting", "nature"];
 const randomTag = GIPHY_TAGS[Math.floor(Math.random() * GIPHY_TAGS.length)];
 const GIPHY_API_URL = `${GIPHY_API_BASE_URL}?api_key=${GIPHY_API_KEY}&tag=${randomTag}&rating=${GIPHY_RATING}`;
 
